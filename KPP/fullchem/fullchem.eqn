@@ -483,9 +483,9 @@ PHMSMP     = IGNORE; {HMS from aerosol multiphase chemistry}
 LHMSAQ     = IGNORE; {HMS loss in cloud chemistry}
 LHMSMP     = IGNORE; {HMS loss in aerosol multiphase chemistry}
 ZRO2       = IGNORE; {Lumped RO2 from aromatics}
+H2         = IGNORE; {H2; Molecular hydrogen}
 #DEFFIX
 
-H2         = IGNORE; {H2; Molecular hydrogen}
 N2         = IGNORE; {N2; Molecular nitrogen}
 O2         = IGNORE; {O2; Molecular oxygen}
 
