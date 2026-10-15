@@ -1622,10 +1622,11 @@ H1301:
   Is_Photolysis: true
   MW_g: 148.91
 H2:
-  Background_VV: 5.0e-7
+  # Background_VV: 5.0e-7
   Formula: H2
   FullName: Molecular hydrogen
   Is_Gas: true
+  Is_DryDep: true
   MW_g: 2.02
 H2402:
   Formula: C2Br2F4
