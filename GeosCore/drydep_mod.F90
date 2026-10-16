@@ -23,6 +23,7 @@ MODULE DRYDEP_MOD
   USE PhysConstants          ! Physical constants
   USE PRECISION_MOD          ! For GEOS-Chem Precision (fp)
   USE TIME_MOD
+  USE HCO_Error_Mod,    ONLY : hp ! HEMCO working precision, for H2_DEPVEL
 
   IMPLICIT NONE
   PRIVATE
@@ -159,6 +160,7 @@ MODULE DRYDEP_MOD
   INTEGER                        :: DRYHg0,     DRYHg2,     DryHgP
   INTEGER                        :: id_ACET,    id_ALD2,    id_O3
   INTEGER                        :: id_MENO3,   id_ETNO3,   id_MOH
+  INTEGER                        :: id_H2
   INTEGER                        :: id_NK01,    id_Hg0
   INTEGER                        :: id_HNO3,    id_PAN,     id_IHN1
   INTEGER                        :: id_H2O2,    id_SO2,     id_NH3
@@ -205,6 +207,7 @@ MODULE DRYDEP_MOD
   ! Allocatable arrays
   REAL(f8),          ALLOCATABLE :: DMID    (:    )
   REAL(f8),          ALLOCATABLE :: SALT_V  (:    )
+  REAL(f8),          ALLOCATABLE :: H2_DEPVEL(:,: )
 
   !=================================================================
   ! MODULE ROUTINES -- follow below the "CONTAINS" statement
@@ -372,6 +375,7 @@ CONTAINS
 ! !USES:
 !
     USE ErrCode_Mod
+    USE HCO_Utilities_GC_Mod, ONLY : HCO_GC_EvalFld
     USE Input_Opt_Mod,      ONLY : OptInput
     USE Species_Mod,        ONLY : Species
     USE State_Chm_Mod,      ONLY : ChmState
@@ -423,6 +427,23 @@ CONTAINS
 
     ! Initialize
     SpcInfo => NULL()
+
+    ! If H2 dry deposits, read its prescribed spatial deposition velocity
+    ! field from HEMCO (set up in HEMCO_Config.rc, see drydep_mod.F90
+    ! module header). This must be done outside the parallel loop below.
+    IF ( id_H2 > 0 ) THEN
+       CALL HCO_GC_EvalFld( Input_Opt, State_Grid, 'H2_DEPVEL', &
+                             H2_DEPVEL, RC )
+       IF ( RC /= GC_SUCCESS ) THEN
+          ErrMsg = 'Could not find field H2_DEPVEL in HEMCO_Config.rc! ' // &
+                   'This field is required because H2 is flagged as a ' // &
+                   'dry-depositing species (Is_Drydep: true in the ' // &
+                   'species database).'
+          ThisLoc = ' -> at Update_DryDepFreq (in GeosCore/drydep_mod.F90)'
+          CALL GC_Error( ErrMsg, RC, ThisLoc )
+          RETURN
+       ENDIF
+    ENDIF
 
     !=================================================================
     ! Compute dry deposition frequencies; archive diagnostics
@@ -586,6 +607,18 @@ CONTAINS
              IF ( .not. State_Met%IsLand(I,J) ) THEN
                 DVZ = 0e+0_f8
              ENDIF
+          ENDIF
+
+          !-----------------------------------------------------------
+          ! Special treatment for H2
+          !-----------------------------------------------------------
+
+          ! For H2, override the Wesely-scheme velocity computed above
+          ! with the prescribed spatial field (soil uptake, two-layer
+          ! model of Yashiro et al., 2011) read from HEMCO into
+          ! H2_DEPVEL [cm/s].
+          IF ( N == id_H2 ) THEN
+             DVZ = DBLE( H2_DEPVEL(I,J) )
           ENDIF
 
           !-----------------------------------------------------------
@@ -4701,6 +4734,7 @@ CONTAINS
     id_MENO3  = 0
     id_ETNO3  = 0
     id_MOH    = 0
+    id_H2     = 0
     id_Hg0    = 0
     id_HNO3   = Ind_('HNO3'  )
     id_PAN    = Ind_('PAN'   )
@@ -4797,6 +4831,12 @@ CONTAINS
        IF ( RC /= GC_SUCCESS ) RETURN
        XMW = 0e+0_f8
 
+       ! H2 dry deposition velocity field, read from HEMCO (H2_DEPVEL)
+       ALLOCATE( H2_DEPVEL( State_Grid%NX, State_Grid%NY ), STAT=RC )
+       CALL GC_CheckVar( 'drydep_mod:H2_DEPVEL', 0, RC )
+       IF ( RC /= GC_SUCCESS ) RETURN
+       H2_DEPVEL = 0.0_hp
+
     ENDIF
 
     !=================================================================
@@ -4891,6 +4931,10 @@ CONTAINS
              CASE( 'MOH' )
                 ! Flag the species ID of MOH for use above.
                 id_MOH = SpcInfo%ModelId
+
+             CASE( 'H2' )
+                ! Flag the species ID of H2 for use above.
+                id_H2 = SpcInfo%ModelId
 
              CASE( 'HG0', 'Hg0' )
                 ! for finding Hg0 drydep veloc
@@ -5040,6 +5084,7 @@ CONTAINS
     IF ( ALLOCATED( NTRAIND   ) ) DEALLOCATE( NTRAIND   )
     IF ( ALLOCATED( SALT_V    ) ) DEALLOCATE( SALT_V    )
     IF ( ALLOCATED( XMW       ) ) DEALLOCATE( XMW       )
+    IF ( ALLOCATED( H2_DEPVEL ) ) DEALLOCATE( H2_DEPVEL )
 
   END SUBROUTINE CLEANUP_DRYDEP
 !EOC
