@@ -207,7 +207,7 @@ MODULE DRYDEP_MOD
   ! Allocatable arrays
   REAL(f8),          ALLOCATABLE :: DMID    (:    )
   REAL(f8),          ALLOCATABLE :: SALT_V  (:    )
-  REAL(f8),          ALLOCATABLE :: H2_DEPVEL(:,: )
+  REAL(hp),          ALLOCATABLE :: H2_DEPVEL(:,: )
 
   !=================================================================
   ! MODULE ROUTINES -- follow below the "CONTAINS" statement
