@@ -613,9 +613,7 @@ CONTAINS
           ! Special treatment for H2
           !-----------------------------------------------------------
 
-          ! For H2, override the Wesely-scheme velocity computed above
-          ! with the prescribed spatial field (soil uptake, two-layer
-          ! model of Yashiro et al., 2011) read from HEMCO into
+          ! For H2, we need to read from HEMCO into
           ! H2_DEPVEL [cm/s].
           IF ( N == id_H2 ) THEN
              DVZ = DBLE( H2_DEPVEL(I,J) )
