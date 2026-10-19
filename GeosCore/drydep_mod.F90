@@ -207,6 +207,9 @@ MODULE DRYDEP_MOD
   ! Allocatable arrays
   REAL(f8),          ALLOCATABLE :: DMID    (:    )
   REAL(f8),          ALLOCATABLE :: SALT_V  (:    )
+
+  ! H2 dry deposition velocity [cm/s], read from HEMCO field 'H2_DEPVEL'.
+  ! (ysy, 19 Oct 2026)
   REAL(hp),          ALLOCATABLE :: H2_DEPVEL(:,: )
 
   !=================================================================
