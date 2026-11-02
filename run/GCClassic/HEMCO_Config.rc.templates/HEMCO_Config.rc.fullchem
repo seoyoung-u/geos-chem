@@ -156,6 +156,7 @@ VerboseOnCores:              root       # Accepted values: root all
     --> RRTMG                  :       ${RUNDIR_USE_RRTMG}    # 2002
     --> SfcVMR                 :       ${RUNDIR_USE_SFCVMR}    # 1750-2014
     --> OCEAN_O3_DRYDEP        :       true     # 1985
+    --> H2_DEPVEL              :       true     
 # -----------------------------------------------------------------------------
 100     Custom                 : off   -
 101     SeaFlux                : on    DMS/ACET/ALD2/MENO3/ETNO3/MOH
@@ -194,7 +195,7 @@ VerboseOnCores:              root       # Accepted values: root all
     --> Monoterp to SOAS       :       0.050
     --> Othrterp to SOAP       :       0.050
     --> Othrterp to SOAS       :       0.050
-111     GFED                   : ${RUNDIR_GFED_EXT}   NO/CO/ALK4/ACET/MEK/ALD2/PRPE/C2H2/C2H4/C3H8/CH2O/C2H6/SO2/NH3/BCPO/BCPI/OCPO/OCPI/POG1/POG2/MTPA/BENZ/TOLU/XYLE/NAP/EOH/MOH/SOAP/FURA/PHEN/MVK/ISOP/ACTA/MGLY/GLYX/RCHO/HCOOH/ACR/STYR/C4H6
+111     GFED                   : ${RUNDIR_GFED_EXT}   NO/CO/ALK4/ACET/MEK/ALD2/PRPE/C2H2/C2H4/C3H8/CH2O/C2H6/SO2/NH3/BCPO/BCPI/OCPO/OCPI/POG1/POG2/MTPA/BENZ/TOLU/XYLE/NAP/EOH/MOH/SOAP/FURA/PHEN/MVK/ISOP/ACTA/MGLY/GLYX/RCHO/HCOOH/ACR/STYR/C4H6/H2
     --> GFED4                  :       true
     --> GFED_daily             :       false
     --> GFED_3hourly           :       false
@@ -204,6 +205,7 @@ VerboseOnCores:              root       # Accepted values: root all
     --> hydrophilic OC         :       0.5
     --> fraction POG1          :       0.49
     --> CO to SOAP             :       0.013
+    --> CO to H2               :       1.0
     --> GFED_subgrid_coag      :       false
 112     GFAS                   : ${RUNDIR_GFAS_EXT}   ACET/ACR/ACTA/ALD2/ALK4/BCPI/BCPO/BENZ/C2H2/C2H4/C2H6/C3H8/C4H6/CH2O/CO/DMS/EOH/FURA/GLYX/HCOOH/ISOP/MEK/MGLY/MOH/MTPA/MVK/NAP/NH3/NO/OCPI/OCPO/pFe/PHEN/POG1/POG2/PRPE/RCHO/SO2/SOAP/STYR/TOLU/XYLE
     --> Vertical Profile Species:      CO
@@ -4128,6 +4130,13 @@ ${RUNDIR_TES_CLIM_N2O}
 * surf_salinity   $ROOT/OCEAN_O3_DRYDEP/v2020-02/WOA_2013_salinity.nc                                                s_mn                   1985/1/1/0    C xy 1 * - 1 1
 * surf_iodide     $ROOT/OCEAN_O3_DRYDEP/v2020-02/Oi_prj_predicted_iodide_0.125x0.125_No_Skagerrak_Just_Ensemble.nc   Ensemble_Monthly_mean  1970/1-12/1/0 C xy 1 * - 1 1
 )))OCEAN_O3_DRYDEP
+
+#==============================================================================
+# --- H2 dry deposition velocity (soil uptake) ---
+#==============================================================================
+(((H2_DEPVEL
+* H2_DEPVEL           $ROOT/H2_DEPVEL/v2026-01/H2_DEPVEL.2x25.nc    -             -                   C xy cm/s *         - 1 1
+)))H2_DEPVEL
 
 ### END SECTION BASE EMISSIONS ###
 
